@@ -2,6 +2,7 @@
 #include "octospi.h"
 #include "stm32h7xx_hal_ospi.h"
 #include <board.h>
+#include <stdint.h>
 #include <string.h>
 
 int board_init(uint32_t addr, uint32_t freq, uint32_t func)
@@ -21,9 +22,12 @@ int board_deinit(uint32_t func)
     return 0;
 }
 
-int borad_exFlash_EnableMMAP()
+int borad_exFlash_EnableMMAP(uint8_t en)
 {
-    return OSPI_W25Qxx_MemoryMappedMode() == OSPI_W25Qxx_OK ? 0 : -1;
+    if (en)
+        return OSPI_W25Qxx_MemoryMappedMode() == OSPI_W25Qxx_OK ? 0 : -1;
+    else
+        return HAL_OSPI_Abort(&hospi2);
 }
 
 int board_exFlash_EraseSector(uint32_t SectorAddr)

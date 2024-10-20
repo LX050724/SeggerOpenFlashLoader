@@ -33,5 +33,5 @@ int board_exFlash_WritePage(uint32_t addr, uint8_t *buf, uint32_t len);
 #if SUPPORT_NATIVE_READ_FUNCTION
 int board_exFlash_Read(uint32_t addr, uint8_t *buf, uint32_t len);
 #else
-int borad_exFlash_EnableMMAP();
+int borad_exFlash_EnableMMAP(uint8_t en);
 #endif
