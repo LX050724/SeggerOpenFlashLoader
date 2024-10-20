@@ -1,12 +1,15 @@
 #include "W25Q64/w25q64.h"
 #include "octospi.h"
 #include "stm32h7xx_hal_ospi.h"
+#include "stm32h7xx_ll_bus.h"
+#include "system_stm32h7xx.h"
 #include <board.h>
 #include <stdint.h>
 #include <string.h>
 
 int board_init(uint32_t addr, uint32_t freq, uint32_t func)
 {
+    SystemInit();
     memset(&hospi2, 0, sizeof(hospi2));
     MX_OCTOSPI2_Init();
 
@@ -18,6 +21,9 @@ int board_init(uint32_t addr, uint32_t freq, uint32_t func)
 int board_deinit(uint32_t func)
 {
     HAL_OSPI_DeInit(&hospi2);
+
+    LL_AHB3_GRP1_ForceReset(LL_AHB3_GRP1_PERIPH_OSPI2);
+    LL_AHB3_GRP1_ReleaseReset(LL_AHB3_GRP1_PERIPH_OSPI2);
     memset(&hospi2, 0, sizeof(hospi2));
     return 0;
 }
