@@ -16,7 +16,7 @@ struct FlashDevice const FlashDevice __attribute__((section("DevDscr"))) = {
     // Flash sector layout definition
     //
     {
-        {0x00004000, 0x00000000},
+        {0x00001000, 0x00000000},
         SECTOR_END,
     },
 };

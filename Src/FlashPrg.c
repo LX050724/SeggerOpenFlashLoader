@@ -12,8 +12,6 @@ Purpose : Implementation of RAMCode template
 #include <board.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <sys/cdefs.h>
 
 #define READ_BUF_SIZE 512
 
@@ -126,6 +124,7 @@ int Init(U32 Addr, U32 Freq, U32 Func)
  */
 int UnInit(U32 Func)
 {
+    EnableMMAP(0);
     int ret = board_deinit(Func);
     return ret == 0 ? 0 : 1;
 }

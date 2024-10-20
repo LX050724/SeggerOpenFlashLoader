@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+int QSPI_W25Qxx_Init();
 int QSPI_W25Qxx_Reset();
 int QSPI_W25Qxx_Entry4BAddr();
 uint32_t QSPI_W25Qxx_Read_JEDECID();

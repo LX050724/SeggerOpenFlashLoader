@@ -1,4 +1,5 @@
 
+#include "w25q256.h"
 #include "stm32h7xx_hal.h"
 #include "stm32h7xx_hal_def.h"
 #include "stm32h7xx_hal_qspi.h"
@@ -35,6 +36,9 @@
 #define W25Qxx_Status_REG3_ADS 0x01
 
 // W25Q256JV-IQ/JQ
+static int QSPI_W25Qxx_WriteEnable();
+static int QSPI_W25Qxx_Cmd(uint8_t cmd);
+static int QSPI_W25Qxx_SetExAddr(uint8_t addr);
 
 static int QSPI_W25Qxx_Polling(uint8_t reg_cmd, uint8_t mask, uint8_t match)
 {
@@ -83,6 +87,47 @@ static int QSPI_W25Qxx_Cmd(uint8_t cmd)
     return 0;
 }
 
+static int QSPI_W25Qxx_Enter4ByteMode()
+{
+    if (QSPI_W25Qxx_Cmd(W25Qxx_CMD_Entry4BAddrMode) != 0)
+        return -1;
+    if (QSPI_W25Qxx_Polling(W25Qxx_CMD_ReadStatus_REG3, W25Qxx_Status_REG3_ADS, W25Qxx_Status_REG3_ADS) != 0)
+        return -1;
+    return 0;
+}
+
+static int QSPI_W25Qxx_Exit4ByteMode()
+{
+    if (QSPI_W25Qxx_Cmd(W25Qxx_CMD_Exit4BAddrMode) != 0)
+        return -1;
+    if (QSPI_W25Qxx_Polling(W25Qxx_CMD_ReadStatus_REG3, W25Qxx_Status_REG3_ADS, 0) != 0)
+        return -1;
+    return 0;
+}
+
+static int QSPI_W25Qxx_SetExAddr(uint8_t addr)
+{
+    if (QSPI_W25Qxx_WriteEnable() != HAL_OK)
+        return -1;
+
+    QSPI_CommandTypeDef sCommand = {};
+    sCommand.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    sCommand.AddressMode = QSPI_ADDRESS_NONE;
+    sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    sCommand.DdrMode = QSPI_DDR_MODE_DISABLE;
+    sCommand.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    sCommand.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    sCommand.DataMode = QSPI_DATA_1_LINE;
+    sCommand.NbData = 1;
+    sCommand.DummyCycles = 0;
+    sCommand.Instruction = W25Qxx_CMD_WrtieExtAddr;
+
+    if (HAL_QSPI_Command(&hqspi, &sCommand, HAL_MAX_DELAY) != HAL_OK)
+        return -1;
+    if (HAL_QSPI_Transmit(&hqspi, &addr, HAL_MAX_DELAY) != HAL_OK)
+        return -1;
+    return 0;
+}
 
 int QSPI_W25Qxx_Reset()
 {
@@ -93,6 +138,42 @@ int QSPI_W25Qxx_Reset()
     if (QSPI_W25Qxx_Polling(W25Qxx_CMD_ReadStatus_REG1, W25Qxx_Status_REG1_BUSY, 0) != 0)
         return -1;
 
+    return 0;
+}
+
+int QSPI_W25Qxx_ReadReg(uint8_t reg_cmd)
+{
+    QSPI_CommandTypeDef sCommand = {};
+    uint8_t reg_val;
+
+    sCommand.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    sCommand.AddressMode = QSPI_ADDRESS_NONE;
+    sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    sCommand.DdrMode = QSPI_DDR_MODE_DISABLE;
+    sCommand.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+    sCommand.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    sCommand.DataMode = QSPI_DATA_1_LINE;
+    sCommand.DummyCycles = 0;
+    sCommand.NbData = 1;
+    sCommand.Instruction = reg_cmd;
+
+    if (HAL_QSPI_Command(&hqspi, &sCommand, HAL_MAX_DELAY) != HAL_OK)
+        return -1;
+    if (HAL_QSPI_Receive(&hqspi, &reg_val, HAL_MAX_DELAY) != HAL_OK)
+        return -1;
+    return reg_val;
+}
+
+int QSPI_W25Qxx_Init()
+{
+    if (QSPI_W25Qxx_Reset() != 0)
+        return -1;
+    // 检查4Byte地址使能，如未使能则临时进入4Byte模式
+    int reg3 = QSPI_W25Qxx_ReadReg(W25Qxx_CMD_ReadStatus_REG3);
+    if (reg3 < 0)
+        return -1;
+    if ((reg3 & W25Qxx_Status_REG3_ADS) == 0)
+        QSPI_W25Qxx_Enter4ByteMode();
     return 0;
 }
 
@@ -150,7 +231,6 @@ static int QSPI_W25Qxx_WriteEnable()
     return 0;
 }
 
-
 int QSPI_W25Qxx_Read(uint32_t addr, uint8_t *buf, uint32_t len)
 {
     QSPI_CommandTypeDef sCommand = {};
@@ -165,7 +245,7 @@ int QSPI_W25Qxx_Read(uint32_t addr, uint8_t *buf, uint32_t len)
     sCommand.DataMode = QSPI_DATA_4_LINES;
     sCommand.DummyCycles = 6;
     sCommand.NbData = len;
-    sCommand.Instruction = W25Qxx_CMD_FastReadQuad_IO;
+    sCommand.Instruction = W25Qxx_CMD32_FastReadQuad_IO;
 
     if (HAL_QSPI_Command(&hqspi, &sCommand, HAL_MAX_DELAY) != HAL_OK)
         return -1;
@@ -205,16 +285,12 @@ int QSPI_W25Qxx_WritePage(uint32_t addr, uint8_t *buf, uint32_t len)
     return len;
 }
 
-static int QSPI_W25Qxx_Erase(uint8_t erase_cmd, uint32_t SectorAddr)
+static int QSPI_W25Qxx_Erase(uint8_t erase_cmd, int addr_len, uint32_t SectorAddr)
 {
     QSPI_CommandTypeDef sCommand = {};
-
-    if (QSPI_W25Qxx_WriteEnable() != HAL_OK)
-        return -1;
-
     sCommand.InstructionMode = QSPI_INSTRUCTION_1_LINE;
     sCommand.Address = SectorAddr;
-    sCommand.AddressSize = QSPI_ADDRESS_32_BITS;
+    sCommand.AddressSize = addr_len;
     sCommand.AddressMode = QSPI_ADDRESS_1_LINE;
     sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     sCommand.DdrMode = QSPI_DDR_MODE_DISABLE;
@@ -225,6 +301,8 @@ static int QSPI_W25Qxx_Erase(uint8_t erase_cmd, uint32_t SectorAddr)
     sCommand.NbData = 0;
     sCommand.Instruction = erase_cmd;
 
+    if (QSPI_W25Qxx_WriteEnable() != HAL_OK)
+        return -1;
     if (HAL_QSPI_Command(&hqspi, &sCommand, HAL_MAX_DELAY) != HAL_OK)
         return -1;
     if (QSPI_W25Qxx_Polling(W25Qxx_CMD_ReadStatus_REG1, W25Qxx_Status_REG1_BUSY, 0) != 0)
@@ -234,17 +312,17 @@ static int QSPI_W25Qxx_Erase(uint8_t erase_cmd, uint32_t SectorAddr)
 
 int QSPI_W25Qxx_EraseSector(uint32_t SectorAddr)
 {
-    return QSPI_W25Qxx_Erase(W25Qxx_CMD_SectorErase, SectorAddr);
+    return QSPI_W25Qxx_Erase(W25Qxx_CMD_SectorErase, QSPI_ADDRESS_32_BITS, SectorAddr);
 }
 
 int QSPI_W25Qxx_EraseBlock32K(uint32_t SectorAddr)
 {
-    return QSPI_W25Qxx_Erase(W25Qxx_CMD_BlockErase_32K, SectorAddr);
+    return QSPI_W25Qxx_Erase(W25Qxx_CMD_BlockErase_32K, QSPI_ADDRESS_32_BITS, SectorAddr);
 }
 
 int QSPI_W25Qxx_EraseBlock64K(uint32_t SectorAddr)
 {
-    return QSPI_W25Qxx_Erase(W25Qxx_CMD_BlockErase_64K, SectorAddr);
+    return QSPI_W25Qxx_Erase(W25Qxx_CMD_BlockErase_64K, QSPI_ADDRESS_32_BITS, SectorAddr);
 }
 
 int QSPI_W25Qxx_EraseChip()
@@ -285,7 +363,7 @@ int QSPI_W25Qxx_MemoryMappedMode()
     sCommand.DataMode = QSPI_DATA_4_LINES;
     sCommand.DummyCycles = 6;
     sCommand.NbData = 0;
-    sCommand.Instruction = W25Qxx_CMD_FastReadQuad_IO;
+    sCommand.Instruction = W25Qxx_CMD32_FastReadQuad_IO;
 
     if (HAL_QSPI_MemoryMapped(&hqspi, &sCommand, &sMemMappedCfg) != HAL_OK)
         return -1;

@@ -13,8 +13,8 @@ int board_init(uint32_t addr, uint32_t freq, uint32_t func)
     SystemInit();
     memset(&hqspi, 0, sizeof(hqspi));
     MX_QUADSPI_Init();
-    QSPI_W25Qxx_Reset();
-    QSPI_W25Qxx_Entry4BAddr();
+    if (QSPI_W25Qxx_Init() != 0)
+        return -1;
     return 0;
 }
 
