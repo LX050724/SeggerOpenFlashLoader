@@ -1,0 +1,8 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="ST" Name="STM32H743II"/>
+    <FlashBankInfo Name="QSPI Flash" BaseAddr="0x90000000" AlwaysPresent="0" >
+      <LoaderInfo Name="Alientek_H743_W25Q256" MaxSize="0x02000000" Loader="Alientek_H743_W25Q256.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+    </FlashBankInfo>
+  </Device>
+</DataBase>

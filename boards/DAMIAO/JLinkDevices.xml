@@ -1,0 +1,8 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="ST" Name="STM32H723VG"/>
+    <FlashBankInfo Name="OSPI flash" BaseAddr="0x70000000" AlwaysPresent="0" >
+      <LoaderInfo Name="DAMIAO_MC02_W25Q64" MaxSize="0x800000" Loader="DAMIAO_MC02_W25Q64.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+    </FlashBankInfo>
+  </Device>
+</DataBase>
