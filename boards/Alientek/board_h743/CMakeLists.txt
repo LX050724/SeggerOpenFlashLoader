@@ -1,3 +1,4 @@
+if (DRIVER_STM32H7XX_ENABLE)
 
 add_executable(Alientek_H743_W25Q256
     FlashDev.c
@@ -22,3 +23,5 @@ target_link_libraries(Alientek_H743_W25Q256 stm32h7xx_hal)
 Alientek_install_elf(Alientek_H743_W25Q256)
 
 target_link_options(Alientek_H743_W25Q256 PRIVATE "-Wl,-Map=Alientek_H743_W25Q256.map")
+
+endif()

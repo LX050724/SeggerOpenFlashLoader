@@ -1,6 +1,10 @@
-# SEGGER JLink 下载算法
+# SEGGER JLink 外置Flash下载算法
 
-使用子仓库，请使用`git clone --recursive`命令下载或下载后使用`git submodule update --init`命令初始化子仓库，支持cmake自动安装
+依赖库使用cmake下载，为节省下载时间驱动使能默认关闭，需要手动开启相应驱动，或使能`DRIVER_ALL_ENABLE`开启所有驱动
+
+`BOARD_MANFACTURER`为选中的制造商列表，默认选中全部
+
+`BOARD_NAME`为选中的开发板列表，默认选中全部
 
 当前支持的开发板：
 

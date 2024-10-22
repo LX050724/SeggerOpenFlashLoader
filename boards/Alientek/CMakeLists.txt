@@ -1,5 +1,6 @@
 
 function(Alientek_install_elf TARGET)
+    message("Add Algorithm: " ${TARGET})
     install(
         TARGETS ${TARGET} RUNTIME
         DESTINATION ${JLINK_DEIVCE_DIR}/Alientek
@@ -14,7 +15,6 @@ endif()
 
 foreach(BOARD_DIR IN LISTS BOARD_DIRS)
     get_filename_component(BOARD_DIR_NAME ${BOARD_DIR} NAME)
-    message("Add Board: " ${BOARD_DIR_NAME})
     add_subdirectory(${BOARD_DIR})
 endforeach()
 

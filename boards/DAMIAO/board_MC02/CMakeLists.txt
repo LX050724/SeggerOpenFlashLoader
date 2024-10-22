@@ -1,3 +1,4 @@
+if (DRIVER_STM32H7XX_ENABLE)
 
 add_executable(DAMIAO_MC02_W25Q64
     FlashDev.c
@@ -22,3 +23,5 @@ target_link_libraries(DAMIAO_MC02_W25Q64 stm32h7xx_hal)
 DAMIAO_install_elf(DAMIAO_MC02_W25Q64)
 
 target_link_options(DAMIAO_MC02_W25Q64 PRIVATE "-Wl,-Map=DAMIAO_MC02_W25Q64.map")
+
+endif()
