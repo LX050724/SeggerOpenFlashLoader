@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <stm32h7xx_hal.h>
+#include <stm32h7xx_hal_ospi.h>
 
 //
 // Some flash types require a native verify function as the memory is not memory mapped available (e.g. eMMC flashes).

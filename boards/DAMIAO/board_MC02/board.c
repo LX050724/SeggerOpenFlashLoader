@@ -1,11 +1,13 @@
-#include "W25Q64/w25q64.h"
 #include "octospi.h"
 #include "stm32h7xx_hal_ospi.h"
 #include "stm32h7xx_ll_bus.h"
 #include "system_stm32h7xx.h"
+#include <FlashAbstractionLayer.h>
 #include <board.h>
 #include <stdint.h>
 #include <string.h>
+
+FAL_SPI_Driver fal_driver;
 
 int board_init(uint32_t addr, uint32_t freq, uint32_t func)
 {
@@ -13,7 +15,12 @@ int board_init(uint32_t addr, uint32_t freq, uint32_t func)
     memset(&hospi2, 0, sizeof(hospi2));
     MX_OCTOSPI2_Init();
 
-    if (OSPI_W25Qxx_Init() != OSPI_W25Qxx_OK)
+    fal_driver.userdata = &hospi2;
+    fal_driver.capacity.flash_size = FLASH_SIZE_MBIT(64);
+    fal_driver.capacity.support_mmap = true;
+    fal_driver.capacity.spi_type = SPI_TYPE_QUAD;
+
+    if (FAL_Init(&fal_driver) != FAL_OK)
         return -1;
     return 0;
 }
@@ -30,38 +37,35 @@ int board_deinit(uint32_t func)
 
 int borad_exFlash_EnableMMAP(uint8_t en)
 {
-    if (en)
-        return OSPI_W25Qxx_MemoryMappedMode() == OSPI_W25Qxx_OK ? 0 : -1;
-    else
-        return HAL_OSPI_Abort(&hospi2);
+    return FAL_MemoryMappedMode(&fal_driver, en);
 }
 
 int board_exFlash_EraseSector(uint32_t SectorAddr)
 {
-    return OSPI_W25Qxx_SectorErase(SectorAddr) == OSPI_W25Qxx_OK ? 0 : -1;
+    return FAL_EraseSector(&fal_driver, SectorAddr);
 }
 
 int board_exFlash_EraseBlock32K(uint32_t SectorAddr)
 {
-    return OSPI_W25Qxx_BlockErase_32K(SectorAddr) == OSPI_W25Qxx_OK ? 0 : -1;
+    return FAL_EraseBlock32K(&fal_driver, SectorAddr);
 }
 
 int board_exFlash_EraseBlock64K(uint32_t SectorAddr)
 {
-    return OSPI_W25Qxx_BlockErase_64K(SectorAddr) == OSPI_W25Qxx_OK ? 0 : -1;
+    return FAL_EraseBlock64K(&fal_driver, SectorAddr);
 }
 
 int board_exFlash_EraseChip()
 {
-    return OSPI_W25Qxx_ChipErase() == OSPI_W25Qxx_OK ? 0 : -1;
+    return FAL_EraseChip(&fal_driver);
 }
 
 int board_exFlash_WritePage(uint32_t addr, uint8_t *buf, uint32_t len)
 {
-    return OSPI_W25Qxx_WritePage(buf, addr, len) == OSPI_W25Qxx_OK ? (int)len : -1;
+    return FAL_WritePage(&fal_driver, addr, buf, len);
 }
 
 int board_exFlash_Read(uint32_t addr, uint8_t *buf, uint32_t len)
 {
-    return OSPI_W25Qxx_ReadBuffer(buf, addr, len) == OSPI_W25Qxx_OK ? (int)len : -1;
+    return FAL_Read(&fal_driver, addr, buf, len);
 }

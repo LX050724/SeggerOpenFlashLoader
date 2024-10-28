@@ -1,0 +1,11 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="ST" Name="STM32H750XB"/>
+    <FlashBankInfo Name="QSPI flash" BaseAddr="0x90000000" AlwaysPresent="0" >
+      <LoaderInfo Name="RTThread_ArtPi_QSPI_W25Q64" MaxSize="0x00800000" Loader="RTThread_ArtPi_QSPI_W25Q64.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+    </FlashBankInfo>
+        <FlashBankInfo Name="SPI Data flash" BaseAddr="0xA0000000" AlwaysPresent="0" >
+      <LoaderInfo Name="RTThread_ArtPi_SPI_W25Q128" MaxSize="0x01000000" Loader="RTThread_ArtPi_SPI_W25Q128.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+    </FlashBankInfo>
+  </Device>
+</DataBase>

@@ -1,12 +1,10 @@
 #pragma once
 
-#include "stm32h7xx_hal.h"
-#include "stm32h7xx_hal_qspi.h"
 #include <stdint.h>
+#include <stm32h7xx_hal.h>
+#include <stm32h7xx_hal_qspi.h>
+#include <stm32h7xx_hal_spi.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 //
 // Some flash types require a native verify function as the memory is not memory mapped available (e.g. eMMC flashes).
 // If the verify function is implemented in the algorithm, it will be used by the J-Link DLL during compare / verify
@@ -15,7 +13,12 @@ extern "C" {
 // as this may can slow-down the compare / verify step.
 //
 #define SUPPORT_NATIVE_VERIFY (0)
+#ifdef QSPI_W25Q64
 #define SUPPORT_NATIVE_READ_FUNCTION (0)
+#endif
+#ifdef SPI_W25Q128
+#define SUPPORT_NATIVE_READ_FUNCTION (1)
+#endif
 #define SUPPORT_BLANK_CHECK (1)
 #define SUPPORT_ERASE_CHIP (1)
 #define SUPPORT_SEGGER_OPEN_Program (1)
@@ -39,8 +42,4 @@ int board_exFlash_WritePage(uint32_t addr, uint8_t *buf, uint32_t len);
 int board_exFlash_Read(uint32_t addr, uint8_t *buf, uint32_t len);
 #else
 int borad_exFlash_EnableMMAP(uint8_t en);
-#endif
-
-#ifdef __cplusplus
-}
 #endif

@@ -260,10 +260,11 @@ int BlankCheck(U32 Addr, U32 NumBytes, U8 BlankData)
 
     while (NumBytes)
     {
-        int op_len = NumBytes > READ_BUF_SIZE ? READ_BUF_SIZE : NumBytes;
+        int op_len = (NumBytes > READ_BUF_SIZE) ? READ_BUF_SIZE : NumBytes;
         int ret = board_exFlash_Read(FlashAddr, buf, op_len);
-        if (ret != op_len)
+        if (ret != 0)
             return ret;
+        NumBytes -= op_len;
         for (int i = 0; i < op_len; i++)
         {
             if (buf[i] != BlankData)
@@ -365,7 +366,7 @@ int SEGGER_OPEN_Program(U32 DestAddr, U32 NumBytes, U8 *pSrcBuff)
     do
     {
         r = board_exFlash_WritePage(DestAddr - EXFLASH_BASE_ADDR, pSrcBuff, EXFLASH_PAGE_SIZE);
-        if (r != EXFLASH_PAGE_SIZE)
+        if (r != 0)
         {
             EnableMMAP(1);
             return r;
@@ -460,7 +461,7 @@ int SEGGER_OPEN_Erase(U32 SectorAddr, U32 SectorIndex, U32 NumSectors)
  *    (2) Use "noinline" attribute to make sure that function is never inlined and label not accidentally removed by
  * linker from ELF file.
  */
-U32 SEGGER_OPEN_CalcCRC(U32 CRC, U32 Addr, U32 NumBytes, U32 Polynom)
+U32 SEGGER_OPEN_CalcCRC(U32 crc, U32 Addr, U32 NumBytes, U32 Polynom)
 {
 #if SUPPORT_NATIVE_READ_FUNCTION
     uint8_t buf[READ_BUF_SIZE];
@@ -472,14 +473,14 @@ U32 SEGGER_OPEN_CalcCRC(U32 CRC, U32 Addr, U32 NumBytes, U32 Polynom)
         int ret = board_exFlash_Read(FlashAddr, buf, op_len);
         if (ret != op_len)
             return ret;
-        CRC = SEGGER_OFL_Lib_CalcCRC(&SEGGER_OFL_Api, CRC, (uint32_t)&FlashAddr, op_len, Polynom);
+        crc = SEGGER_OFL_Lib_CalcCRC(&SEGGER_OFL_Api, crc, (uint32_t)&FlashAddr, op_len, Polynom);
     }
-    return CRC;
+    return crc;
 #else
     // Use lib function from SEGGER by default. Pass API pointer to it because it
     // may need to call the read function (non-memory mapped flashes)
-    CRC = SEGGER_OFL_Lib_CalcCRC(&SEGGER_OFL_Api, CRC, Addr, NumBytes, Polynom);
-    return CRC;
+    crc = SEGGER_OFL_Lib_CalcCRC(&SEGGER_OFL_Api, crc, Addr, NumBytes, Polynom);
+    return crc;
 #endif
 }
 

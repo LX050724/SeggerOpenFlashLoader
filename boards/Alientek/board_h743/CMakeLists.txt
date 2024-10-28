@@ -4,7 +4,6 @@ add_executable(Alientek_H743_W25Q256
     FlashDev.c
     board.c
     quadspi.c
-    W25Q256/w25q256.c
 )
 
 target_include_directories(Alientek_H743_W25Q256 PRIVATE 
@@ -18,10 +17,11 @@ target_compile_definitions(Alientek_H743_W25Q256 PRIVATE
     EXFLASH_PAGE_SIZE=256
 )
 
-target_link_libraries(Alientek_H743_W25Q256 stm32h7xx_hal)
+target_link_libraries(Alientek_H743_W25Q256
+    stm32h7xx_hal
+    FAL_STM_HAL_QSPI
+)
 
 Alientek_install_elf(Alientek_H743_W25Q256)
-
-target_link_options(Alientek_H743_W25Q256 PRIVATE "-Wl,-Map=Alientek_H743_W25Q256.map")
 
 endif()

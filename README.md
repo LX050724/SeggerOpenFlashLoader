@@ -8,7 +8,12 @@
 
 当前支持的开发板：
 
-|制造商|型号|MCU型号|Flash型号|算法名称|
-|---|---|---|---|---|
-|正点原子|H743|STM32H743IIT6|W25Q256|Alientek_H743_W25Q256|
-|达秒科技|MC02|STM32H723VGT6|W25Q64|DAMIAO_MC02_W25Q64|
+|制造商|型号|MCU型号|Flash型号|算法名称|地址|备注|
+|---|---|---|---|---|---|---|
+|正点原子|H743|STM32H743IIT6|W25Q256|Alientek_H743_W25Q256|0x90000000||
+|达秒科技|MC02|STM32H723VGT6|W25Q64|DAMIAO_MC02_W25Q64|0x70000000||
+|RTThread|ArtPi|STM32H750XBH6|W25Q64|RTThread_ArtPi_QSPI_W25Q64|0x90000000|程序Flash|
+||||W25Q128|RTThread_ArtPi_SPI_W25Q128|*0xA0000000|数据Flash|
+
+**：虚拟地址*
+
