@@ -23,6 +23,7 @@ void SystemClock_Config(void);
 int board_init(uint32_t addr, uint32_t freq, uint32_t func)
 {
     SystemInit();
+    SCB_EnableICache();
     SystemClock_Config();
     memset(&fal_driver, 0, sizeof(fal_driver));
 
@@ -67,6 +68,7 @@ int board_deinit(uint32_t func)
 #endif
 
     LL_RCC_DeInit();
+    SCB_DisableICache();
     return 0;
 }
 
