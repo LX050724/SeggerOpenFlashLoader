@@ -10,7 +10,7 @@ endfunction(DAMIAO_install_elf)
 if (${BOARD_NAME} STREQUAL "ALL")
     file(GLOB BOARD_DIRS LIST_DIRECTORIES true board_*)
 else()
-    set(BOARD_DIRS ${BOARD_NAME})
+    list(TRANSFORM BOARD_NAME PREPEND "board_" OUTPUT_VARIABLE BOARD_DIRS)
 endif()
 
 foreach(BOARD_DIR IN LISTS BOARD_DIRS)    

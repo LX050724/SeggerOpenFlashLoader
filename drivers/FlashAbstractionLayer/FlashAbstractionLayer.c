@@ -263,32 +263,32 @@ FAL_Status FAL_MemoryMappedMode(FAL_SPI_Driver *driver, bool enable)
     return FAL_SPI_MemoryMappedMode(&sCommand, enable, driver->userdata);
 }
 
-__weak_symbol FAL_Status FAL_SPI_SendCmd(FAL_SPI_Cmd_t *cmd, void *userdata)
-{
-    __builtin_trap();
-    return FAL_ERR;
-}
+// __weak_symbol FAL_Status FAL_SPI_SendCmd(FAL_SPI_Cmd_t *cmd, void *userdata)
+// {
+//     __builtin_trap();
+//     return FAL_ERR;
+// }
 
-__weak_symbol FAL_Status FAL_SPI_SendData(uint8_t *data, uint32_t len, void *userdata)
-{
-    __builtin_trap();
-    return FAL_ERR;
-}
+// __weak_symbol FAL_Status FAL_SPI_SendData(uint8_t *data, uint32_t len, void *userdata)
+// {
+//     __builtin_trap();
+//     return FAL_ERR;
+// }
 
-__weak_symbol FAL_Status FAL_SPI_ReceiveData(uint8_t *data, uint32_t len, void *userdata)
-{
-    __builtin_trap();
-    return FAL_ERR;
-}
+// __weak_symbol FAL_Status FAL_SPI_ReceiveData(uint8_t *data, uint32_t len, void *userdata)
+// {
+//     __builtin_trap();
+//     return FAL_ERR;
+// }
 
-__weak_symbol FAL_Status FAL_SPI_Polling(FAL_SPI_Cmd_t *cmd, FAL_SPI_PollingConfig_t *config, void *userdata)
-{
-    __builtin_trap();
-    return FAL_ERR;
-}
+// __weak_symbol FAL_Status FAL_SPI_Polling(FAL_SPI_Cmd_t *cmd, FAL_SPI_PollingConfig_t *config, void *userdata)
+// {
+//     __builtin_trap();
+//     return FAL_ERR;
+// }
 
-__weak_symbol FAL_Status FAL_SPI_MemoryMappedMode(FAL_SPI_Cmd_t *cmd, bool enable, void *userdata)
-{
-    __builtin_trap();
-    return FAL_ERR;
-}
+// __weak_symbol FAL_Status FAL_SPI_MemoryMappedMode(FAL_SPI_Cmd_t *cmd, bool enable, void *userdata)
+// {
+//     __builtin_trap();
+//     return FAL_ERR;
+// }
