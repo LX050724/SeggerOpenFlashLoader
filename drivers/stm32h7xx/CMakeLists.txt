@@ -86,8 +86,6 @@ target_compile_definitions(stm32h7xx_hal INTERFACE
 # Add linked libraries
 target_link_libraries(stm32h7xx_hal INTERFACE SEGGER_OFL_Lib_CortexM_LE)
 
-target_link_options(stm32h7xx_hal INTERFACE -T ${CMAKE_CURRENT_LIST_DIR}/stm32h7xx_flashloader.ld)
-
 set(TARGET_FLAGS -mcpu=cortex-m7)
 target_link_options(stm32h7xx_hal INTERFACE ${TARGET_FLAGS} -T ${CMAKE_CURRENT_LIST_DIR}/stm32h7xx_flashloader.ld)
 target_compile_options(stm32h7xx_hal INTERFACE ${TARGET_FLAGS})

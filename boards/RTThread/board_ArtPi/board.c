@@ -13,10 +13,9 @@
 
 
 FAL_SPI_Driver fal_driver;
-
 #ifdef SPI_W25Q128
-#endif
 FAL_SPI_Userdata_t fal_userdata;
+#endif
 
 void SystemClock_Config(void);
 

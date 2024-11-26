@@ -1,0 +1,8 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="ST" Name="STM32G431CB"/>
+    <FlashBankInfo Name="SPI Data flash" BaseAddr="0xA0000000" AlwaysPresent="0" >
+      <LoaderInfo Name="None_FocG431Pico_GD25Q80" MaxSize="0x100000" Loader="None_FocG431Pico_GD25Q80.elf" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+    </FlashBankInfo>
+  </Device>
+</DataBase>
