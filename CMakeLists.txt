@@ -23,9 +23,7 @@ include("cmake/gcc-arm-none-eabi.cmake")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-enable_language(C ASM)
-
-project(SEGGER-OpenFlashLoader)
+project(SEGGER-OpenFlashLoader C ASM)
 
 message("Build type: " ${CMAKE_BUILD_TYPE})
 message("JlinkDevices PATH: " ${JLINK_DEIVCE_DIR})

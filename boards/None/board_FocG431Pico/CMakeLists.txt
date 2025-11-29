@@ -1,4 +1,4 @@
-if (DRIVER_STM32H7XX_ENABLE)
+if (DRIVER_STM32G4XX_ENABLE)
 
 add_executable(None_FocG431Pico_GD25Q80
     FlashDev.c
